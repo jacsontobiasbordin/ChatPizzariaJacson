@@ -19,15 +19,15 @@ public/
 
 ## Configurar o webhook
 
-Abra o site, clique em **Conexão** e cole a URL de produção do webhook:
+O valor padrão já vem configurado em `public/index.html`:
 
 ```
-https://SEU-ESPACO.app.n8n.cloud/webhook/pizzaria-jacson
+https://jacsonbordin.app.n8n.cloud/webhook/pizzaria-jacson
 ```
 
-O endereço fica salvo no `localStorage` do navegador — cada pessoa que abrir o
-site precisa configurá-lo. Para fixar de vez, edite `public/index.html` e
-substitua o valor inicial da variável `webhookUrl`.
+O endereço fica salvo no `localStorage` do navegador assim que a página abre.
+Quem quiser usar outro webhook pode clicar em **Conexão** e colar uma URL
+diferente.
 
 > Use `/webhook/` (produção), não `/webhook-test/`. A URL de teste só responde
 > enquanto você mantém o botão *Execute Workflow* ativo no editor.
