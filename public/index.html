@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pizzaria do Jacson — Peça pelo chat</title>
+<meta name="description" content="Faça seu pedido na Pizzaria do Jacson conversando pelo chat.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --papel:#EDE7DA;
+  --papel-claro:#F6F2E9;
+  --tinta:#1F1C19;
+  --carimbo:#C0261B;
+  --pinho:#2E4638;
+  --mostarda:#E0A324;
+  --fumaca:#8A8377;
+  --linha:rgba(31,28,25,.14);
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --corpo:"Inter",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--corpo);
+  color:var(--tinta);
+  background:var(--papel);
+  background-image:radial-gradient(var(--linha) 1px,transparent 1px);
+  background-size:22px 22px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.app{
+  max-width:760px;
+  margin:0 auto;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  border-left:1px solid var(--linha);
+  border-right:1px solid var(--linha);
+  background:var(--papel-claro);
+}
+
+/* ---------- cabecalho ---------- */
+.topo{
+  position:sticky;top:0;z-index:5;
+  background:var(--pinho);
+  color:var(--papel-claro);
+  padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+}
+.marca{display:flex;flex-direction:column;gap:2px;min-width:0}
+.marca strong{
+  font-family:var(--display);
+  font-weight:800;
+  font-size:1.18rem;
+  letter-spacing:-.02em;
+  line-height:1;
+}
+.marca span{font-size:.72rem;color:rgba(246,242,233,.72);letter-spacing:.06em;text-transform:uppercase}
+.topo-acoes{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+
+.btn{
+  font-family:var(--corpo);
+  font-size:.8rem;font-weight:600;
+  padding:8px 13px;
+  border-radius:2px;
+  border:1px solid transparent;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+}
+.btn:focus-visible{outline:2px solid var(--mostarda);outline-offset:2px}
+.btn-fantasma{border-color:rgba(246,242,233,.4);color:var(--papel-claro)}
+.btn-fantasma:hover{background:rgba(246,242,233,.12)}
+.btn-solido{background:var(--carimbo);color:#fff}
+.btn-solido:hover{background:#a51f16}
+.btn-solido:disabled{background:var(--fumaca);cursor:not-allowed}
+.btn-linha{border-color:var(--linha);color:var(--tinta)}
+.btn-linha:hover{background:rgba(31,28,25,.06)}
+
+/* ---------- painel de configuracao ---------- */
+.config{
+  background:var(--papel);
+  border-bottom:1px solid var(--linha);
+  padding:18px;
+}
+.config[hidden]{display:none}
+.config h2{
+  font-family:var(--display);font-size:.95rem;font-weight:700;
+  margin:0 0 4px;letter-spacing:-.01em;
+}
+.config p{margin:0 0 14px;font-size:.82rem;color:var(--fumaca);line-height:1.5}
+.campo{display:block;margin-bottom:12px}
+.campo span{
+  display:block;font-size:.7rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--fumaca);margin-bottom:5px;
+}
+.campo input{
+  width:100%;padding:11px 12px;
+  font-family:var(--mono);font-size:.84rem;
+  color:var(--tinta);background:var(--papel-claro);
+  border:1px solid var(--linha);border-radius:2px;
+}
+.campo input:focus{outline:2px solid var(--pinho);outline-offset:-1px;border-color:transparent}
+.config-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.aviso{font-size:.78rem;margin:10px 0 0;line-height:1.5}
+.aviso.ok{color:var(--pinho)}
+.aviso.erro{color:var(--carimbo)}
+.aviso:empty{display:none}
+
+/* ---------- conversa ---------- */
+.conversa{
+  flex:1;overflow-y:auto;
+  padding:22px 18px 8px;
+  display:flex;flex-direction:column;gap:18px;
+}
+
+.vazio{margin:auto 0;text-align:center;padding:30px 10px}
+.vazio h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(1.9rem,7vw,2.7rem);
+  line-height:1.02;letter-spacing:-.035em;
+  margin:0 0 12px;
+}
+.vazio h1 em{font-style:normal;color:var(--carimbo)}
+.vazio p{margin:0 auto 20px;max-width:38ch;color:var(--fumaca);font-size:.92rem;line-height:1.55}
+.atalhos{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.atalho{
+  font-size:.82rem;font-weight:500;
+  padding:9px 14px;border-radius:2px;
+  border:1px dashed var(--linha);
+  background:transparent;color:var(--tinta);cursor:pointer;
+}
+.atalho:hover{border-style:solid;border-color:var(--pinho)}
+.atalho:focus-visible{outline:2px solid var(--pinho);outline-offset:2px}
+
+.msg{max-width:88%;display:flex;flex-direction:column;gap:5px}
+.msg .quem{
+  font-size:.63rem;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--fumaca);
+}
+
+/* cliente */
+.msg.cliente{align-self:flex-end;align-items:flex-end}
+.msg.cliente .balao{
+  background:var(--pinho);color:var(--papel-claro);
+  padding:11px 14px;border-radius:2px;
+  font-size:.93rem;line-height:1.5;
+  white-space:pre-wrap;word-wrap:break-word;
+}
+
+/* atendente: ficha de pedido */
+.msg.bot{align-self:flex-start}
+.ficha{
+  position:relative;
+  background:#fffdf7;
+  border:1px solid var(--linha);
+  border-bottom:none;
+  padding:14px 16px 16px;
+  box-shadow:0 1px 0 rgba(31,28,25,.05);
+}
+.ficha::after{
+  content:"";display:block;
+  position:absolute;left:-1px;right:-1px;bottom:-9px;height:9px;
+  background:
+    linear-gradient(-45deg,transparent 50%,#fffdf7 50%) 0 0/9px 9px repeat-x,
+    linear-gradient(45deg,transparent 50%,#fffdf7 50%) 0 0/9px 9px repeat-x;
+  filter:drop-shadow(0 1px 0 var(--linha));
+}
+.ficha p{margin:0 0 9px;font-size:.93rem;line-height:1.55;white-space:pre-wrap}
+.ficha p:last-child{margin-bottom:0}
+.bloco{
+  font-family:var(--mono);font-size:.78rem;line-height:1.62;
+  white-space:pre-wrap;word-wrap:break-word;
+  margin:12px 0 0;padding:13px 14px;
+  background:var(--papel);
+  border-left:3px solid var(--mostarda);
+  overflow-x:auto;
+}
+.msg.bot.fechado .bloco{border-left-color:var(--carimbo)}
+.selo{
+  display:inline-block;margin-top:12px;
+  font-family:var(--display);font-weight:800;font-size:.82rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--carimbo);
+  border:2px solid var(--carimbo);border-radius:2px;
+  padding:5px 11px;transform:rotate(-2.5deg);opacity:.9;
+  animation:carimbar .32s cubic-bezier(.2,1.5,.4,1) both;
+}
+@keyframes carimbar{from{transform:rotate(-9deg) scale(1.5);opacity:0}to{transform:rotate(-2.5deg) scale(1);opacity:.9}}
+
+.msg.falha .ficha{border-color:rgba(192,38,27,.45);background:#fff6f5}
+.msg.falha .ficha::after{
+  background:
+    linear-gradient(-45deg,transparent 50%,#fff6f5 50%) 0 0/9px 9px repeat-x,
+    linear-gradient(45deg,transparent 50%,#fff6f5 50%) 0 0/9px 9px repeat-x;
+  filter:drop-shadow(0 1px 0 rgba(192,38,27,.45));
+}
+
+.pontos{display:inline-flex;gap:4px;padding:3px 0}
+.pontos i{width:6px;height:6px;border-radius:50%;background:var(--fumaca);animation:pulsar 1.1s infinite}
+.pontos i:nth-child(2){animation-delay:.16s}
+.pontos i:nth-child(3){animation-delay:.32s}
+@keyframes pulsar{0%,60%,100%{opacity:.28}30%{opacity:1}}
+
+/* ---------- composicao ---------- */
+.compositor{
+  position:sticky;bottom:0;
+  background:var(--papel-claro);
+  border-top:1px solid var(--linha);
+  padding:12px 18px calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:9px;align-items:flex-end;
+}
+.compositor textarea{
+  flex:1;resize:none;
+  font-family:var(--corpo);font-size:.95rem;line-height:1.45;
+  padding:11px 13px;max-height:132px;
+  color:var(--tinta);background:var(--papel);
+  border:1px solid var(--linha);border-radius:2px;
+}
+.compositor textarea:focus{outline:2px solid var(--pinho);outline-offset:-1px}
+.compositor .btn-solido{padding:12px 20px;flex-shrink:0}
+
+@media (max-width:520px){
+  .msg{max-width:94%}
+  .topo{padding:12px 14px}
+  .conversa{padding:18px 14px 8px}
+  .compositor{padding-left:14px;padding-right:14px}
+  .config{padding:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topo">
+    <div class="marca">
+      <strong>Pizzaria do Jacson</strong>
+      <span id="statusSessao">Atendimento pelo chat</span>
+    </div>
+    <div class="topo-acoes">
+      <button class="btn btn-fantasma" id="btnNovo" type="button">Novo pedido</button>
+      <button class="btn btn-fantasma" id="btnConfig" type="button" aria-expanded="false" aria-controls="config">Conexão</button>
+    </div>
+  </header>
+
+  <section class="config" id="config" hidden>
+    <h2>Onde este site envia as mensagens</h2>
+    <p>Cole o endereço de produção do webhook do seu fluxo no n8n. Ele fica salvo apenas neste navegador.</p>
+    <label class="campo">
+      <span>URL do webhook</span>
+      <input id="inputUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false"
+             placeholder="https://SEU-ESPACO.app.n8n.cloud/webhook/pizzaria-jacson">
+    </label>
+    <div class="config-acoes">
+      <button class="btn btn-solido" id="btnSalvar" type="button">Salvar</button>
+      <button class="btn btn-linha" id="btnTestar" type="button">Testar conexão</button>
+    </div>
+    <p class="aviso" id="avisoConfig" role="status"></p>
+  </section>
+
+  <main class="conversa" id="conversa" aria-live="polite" aria-label="Conversa com o atendimento"></main>
+
+  <div class="compositor">
+    <label for="entrada" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Sua mensagem</label>
+    <textarea id="entrada" rows="1" placeholder="Escreva sua mensagem…"></textarea>
+    <button class="btn btn-solido" id="btnEnviar" type="button">Enviar</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CHAVE_URL = "pdj.webhookUrl";
+  var CHAVE_SESSAO = "pdj.sessionId";
+
+  var el = {
+    conversa: document.getElementById("conversa"),
+    entrada: document.getElementById("entrada"),
+    enviar: document.getElementById("btnEnviar"),
+    config: document.getElementById("config"),
+    btnConfig: document.getElementById("btnConfig"),
+    inputUrl: document.getElementById("inputUrl"),
+    salvar: document.getElementById("btnSalvar"),
+    testar: document.getElementById("btnTestar"),
+    aviso: document.getElementById("avisoConfig"),
+    novo: document.getElementById("btnNovo"),
+    status: document.getElementById("statusSessao")
+  };
+
+  /* ---------- armazenamento local ---------- */
+  function ler(chave){
+    try { return window.localStorage.getItem(chave); } catch(e){ return null; }
+  }
+  function gravar(chave, valor){
+    try { window.localStorage.setItem(chave, valor); } catch(e){}
+  }
+
+  function novaSessao(){
+    var id = "web-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,8);
+    gravar(CHAVE_SESSAO, id);
+    return id;
+  }
+
+  var webhookUrl = ler(CHAVE_URL) || "";
+  var sessionId = ler(CHAVE_SESSAO) || novaSessao();
+  var enviando = false;
+
+  /* ---------- montagem de mensagens ---------- */
+  var INICIO_BLOCO = /^(CARDÁPIO|RESUMO DO PEDIDO)/m;
+
+  function separarBlocos(texto){
+    var m = texto.match(INICIO_BLOCO);
+    if(!m) return { prosa: texto.trim(), bloco: "" };
+    var corte = texto.indexOf(m[0]);
+    return {
+      prosa: texto.slice(0, corte).trim(),
+      bloco: texto.slice(corte).trim()
+    };
+  }
+
+  function limparVazio(){
+    var v = el.conversa.querySelector(".vazio");
+    if(v) v.remove();
+  }
+
+  function msgCliente(texto){
+    limparVazio();
+    var wrap = document.createElement("div");
+    wrap.className = "msg cliente";
+    var quem = document.createElement("div");
+    quem.className = "quem";
+    quem.textContent = "Você";
+    var balao = document.createElement("div");
+    balao.className = "balao";
+    balao.textContent = texto;
+    wrap.appendChild(quem);
+    wrap.appendChild(balao);
+    el.conversa.appendChild(wrap);
+    rolar();
+  }
+
+  function msgBot(texto, opcoes){
+    opcoes = opcoes || {};
+    limparVazio();
+    var wrap = document.createElement("div");
+    wrap.className = "msg bot" + (opcoes.fechado ? " fechado" : "") + (opcoes.falha ? " falha" : "");
+
+    var quem = document.createElement("div");
+    quem.className = "quem";
+    quem.textContent = opcoes.falha ? "Não enviado" : "Atendimento";
+
+    var ficha = document.createElement("div");
+    ficha.className = "ficha";
+
+    var partes = separarBlocos(texto);
+    if(partes.prosa){
+      partes.prosa.split(/\n{2,}/).forEach(function(p){
+        var par = document.createElement("p");
+        par.textContent = p;
+        ficha.appendChild(par);
+      });
+    }
+    if(partes.bloco){
+      var pre = document.createElement("pre");
+      pre.className = "bloco";
+      pre.textContent = partes.bloco;
+      ficha.appendChild(pre);
+    }
+    if(opcoes.fechado){
+      var selo = document.createElement("div");
+      selo.className = "selo";
+      selo.textContent = "Pedido confirmado";
+      ficha.appendChild(selo);
+    }
+
+    wrap.appendChild(quem);
+    wrap.appendChild(ficha);
+    el.conversa.appendChild(wrap);
+    rolar();
+    return wrap;
+  }
+
+  function digitando(){
+    var wrap = document.createElement("div");
+    wrap.className = "msg bot";
+    wrap.innerHTML = '<div class="quem">Atendimento</div><div class="ficha">' +
+      '<div class="pontos" aria-label="Escrevendo"><i></i><i></i><i></i></div></div>';
+    el.conversa.appendChild(wrap);
+    rolar();
+    return wrap;
+  }
+
+  function rolar(){
+    el.conversa.scrollTop = el.conversa.scrollHeight;
+  }
+
+  /* ---------- tela inicial ---------- */
+  function telaInicial(){
+    el.conversa.innerHTML =
+      '<div class="vazio">' +
+        '<h1>Boa noite.<br>O que vai ser <em>hoje</em>?</h1>' +
+        '<p>Peça sua pizza conversando por aqui. Posso mostrar o cardápio, montar o pedido e fechar a entrega.</p>' +
+        '<div class="atalhos">' +
+          '<button class="atalho" type="button" data-frase="Me mostra o cardápio">Ver o cardápio</button>' +
+          '<button class="atalho" type="button" data-frase="Quero fazer um pedido">Fazer um pedido</button>' +
+          '<button class="atalho" type="button" data-frase="Quais formas de pagamento vocês aceitam?">Formas de pagamento</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  el.conversa.addEventListener("click", function(ev){
+    var alvo = ev.target.closest(".atalho");
+    if(!alvo) return;
+    el.entrada.value = alvo.getAttribute("data-frase");
+    enviar();
+  });
+
+  /* ---------- configuracao ---------- */
+  function alternarConfig(forcar){
+    var abrir = typeof forcar === "boolean" ? forcar : el.config.hidden;
+    el.config.hidden = !abrir;
+    el.btnConfig.setAttribute("aria-expanded", String(abrir));
+    if(abrir) el.inputUrl.focus();
+  }
+
+  function mostrarAviso(texto, tipo){
+    el.aviso.textContent = texto;
+    el.aviso.className = "aviso " + (tipo || "");
+  }
+
+  function urlValida(valor){
+    try {
+      var u = new URL(valor);
+      return u.protocol === "http:" || u.protocol === "https:";
+    } catch(e){ return false; }
+  }
+
+  el.btnConfig.addEventListener("click", function(){ alternarConfig(); });
+
+  el.salvar.addEventListener("click", function(){
+    var valor = el.inputUrl.value.trim();
+    if(!urlValida(valor)){
+      mostrarAviso("Esse endereço não é uma URL válida. Ela começa com https:// e termina no caminho do webhook.", "erro");
+      return;
+    }
+    webhookUrl = valor;
+    gravar(CHAVE_URL, valor);
+    mostrarAviso("Endereço salvo. Já pode conversar.", "ok");
+  });
+
+  el.testar.addEventListener("click", function(){
+    var valor = el.inputUrl.value.trim() || webhookUrl;
+    if(!urlValida(valor)){
+      mostrarAviso("Informe a URL do webhook antes de testar.", "erro");
+      return;
+    }
+    mostrarAviso("Testando…", "");
+    el.testar.disabled = true;
+    chamar(valor, "teste de conexão").then(function(){
+      mostrarAviso("Conexão funcionando. O fluxo respondeu.", "ok");
+    }).catch(function(erro){
+      mostrarAviso(erro.message, "erro");
+    }).then(function(){
+      el.testar.disabled = false;
+    });
+  });
+
+  el.novo.addEventListener("click", function(){
+    sessionId = novaSessao();
+    telaInicial();
+    el.entrada.focus();
+  });
+
+  /* ---------- envio ---------- */
+  function chamar(url, mensagem){
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: sessionId, mensagem: mensagem })
+    }).then(function(resposta){
+      if(!resposta.ok){
+        if(resposta.status === 404){
+          throw new Error("O n8n respondeu 404. Ative o fluxo e confira se está usando a URL de produção (/webhook/), não a de teste (/webhook-test/).");
+        }
+        throw new Error("O n8n respondeu com erro " + resposta.status + ". Confira a execução do fluxo no painel.");
+      }
+      return resposta.json();
+    }).catch(function(erro){
+      if(erro instanceof TypeError){
+        throw new Error("Não consegui alcançar o n8n. Verifique a URL e libere este site no campo Allowed Origins (CORS) do nó Webhook.");
+      }
+      throw erro;
+    });
+  }
+
+  function enviar(){
+    if(enviando) return;
+    var texto = el.entrada.value.trim();
+    if(!texto) return;
+
+    if(!webhookUrl){
+      alternarConfig(true);
+      mostrarAviso("Informe a URL do webhook para começar a conversar.", "erro");
+      return;
+    }
+
+    msgCliente(texto);
+    el.entrada.value = "";
+    el.entrada.style.height = "auto";
+    enviando = true;
+    el.enviar.disabled = true;
+    var espera = digitando();
+
+    chamar(webhookUrl, texto).then(function(dados){
+      espera.remove();
+      var resposta = (dados && typeof dados.resposta === "string" && dados.resposta.trim())
+        ? dados.resposta
+        : "O fluxo respondeu, mas sem o campo \u201cresposta\u201d. Confira o nó Responder no n8n.";
+      msgBot(resposta, { fechado: !!(dados && dados.pedido_completo) });
+      if(dados && dados.pedido_completo) sessionId = novaSessao();
+    }).catch(function(erro){
+      espera.remove();
+      msgBot(erro.message, { falha: true });
+    }).then(function(){
+      enviando = false;
+      el.enviar.disabled = false;
+      el.entrada.focus();
+    });
+  }
+
+  el.enviar.addEventListener("click", enviar);
+
+  el.entrada.addEventListener("keydown", function(ev){
+    if(ev.key === "Enter" && !ev.shiftKey){
+      ev.preventDefault();
+      enviar();
+    }
+  });
+
+  el.entrada.addEventListener("input", function(){
+    el.entrada.style.height = "auto";
+    el.entrada.style.height = Math.min(el.entrada.scrollHeight, 132) + "px";
+  });
+
+  /* ---------- inicializacao ---------- */
+  el.inputUrl.value = webhookUrl;
+  el.status.textContent = webhookUrl ? "Atendimento pelo chat" : "Conexão não configurada";
+  telaInicial();
+  if(!webhookUrl){
+    alternarConfig(true);
+    mostrarAviso("Cole a URL do webhook do seu fluxo para ativar o chat.", "");
+  }
+})();
+</script>
+</body>
+</html>
