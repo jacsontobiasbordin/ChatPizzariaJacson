@@ -256,11 +256,11 @@ body{
 
   <section class="config" id="config" hidden>
     <h2>Onde este site envia as mensagens</h2>
-    <p>Cole o endereço de produção do webhook do seu fluxo no n8n. Ele fica salvo apenas neste navegador.</p>
+    <p>Cole o endereço de produção do webhook do seu agente no n8n. Ele fica salvo apenas neste navegador.</p>
     <label class="campo">
       <span>URL do webhook</span>
       <input id="inputUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false"
-             placeholder="https://SEU-ESPACO.app.n8n.cloud/webhook/pizzaria-jacson">
+             placeholder="https://SEU-ESPACO.app.n8n.cloud/webhook/pizzaria-jacson-agente">
     </label>
     <div class="config-acoes">
       <button class="btn btn-solido" id="btnSalvar" type="button">Salvar</button>
@@ -314,7 +314,7 @@ body{
     return id;
   }
 
-  var webhookUrl = ler(CHAVE_URL) || "https://jacsonbordin.app.n8n.cloud/webhook/pizzaria-jacson";
+  var webhookUrl = ler(CHAVE_URL) || "";
   var sessionId = ler(CHAVE_SESSAO) || novaSessao();
   var enviando = false;
 
