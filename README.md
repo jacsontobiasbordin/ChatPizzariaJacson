@@ -35,17 +35,22 @@ Importe `guara-pizzaria-agente-web.json` e deixe pronto:
 
 ## Configurar o webhook
 
-Abra o site, clique em **Conexão** e cole a URL de produção:
+A página já vem apontando para o endereço de produção do agente:
 
 ```
-https://SEU-ESPACO.app.n8n.cloud/webhook/guara-pizzaria
+https://jacsonbordin.app.n8n.cloud/webhook/guara-pizzaria
 ```
+
+Ele está definido em `URL_PADRAO`, no início do script em `public/index.html`.
+Se o endereço mudar, edite ali — é o que vale para todas as pessoas que abrirem
+o site.
+
+O ícone de engrenagem no cabeçalho abre os ajustes, para apontar o chat para
+outro endereço **só neste navegador** (útil para testar). O botão *Restaurar
+padrão* desfaz essa troca.
 
 Use `/webhook/`, não `/webhook-test/` — a de teste só responde enquanto você
 mantém o *Execute Workflow* ativo no editor.
-
-O endereço fica no `localStorage`, ou seja, por navegador. Para fixar de vez,
-edite `public/index.html` e substitua o valor inicial de `webhookUrl`.
 
 ## Liberar o CORS
 
