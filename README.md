@@ -1,7 +1,7 @@
-# Pizzaria do Jacson — página do chatbot
+# Guará Pizzaria — página do chatbot
 
 Página estática que conversa com o **agente** do n8n
-(`pizzaria-do-jacson-agente-web.json`). Sem build, sem dependências.
+(`guara-pizzaria-agente-web.json`). Sem build, sem dependências.
 
 ```
 render.yaml
@@ -11,7 +11,7 @@ public/
 
 ## Antes de publicar: o fluxo do n8n
 
-Importe `pizzaria-do-jacson-agente-web.json` e deixe pronto:
+Importe `guara-pizzaria-agente-web.json` e deixe pronto:
 
 1. **Credenciais** — Google Gemini(PaLM) API no nó do modelo, e Google Sheets
    OAuth2 nos nós *Consultar cardapio* e *Registrar pedido*.
@@ -31,14 +31,14 @@ Importe `pizzaria-do-jacson-agente-web.json` e deixe pronto:
    `render.yaml` e cria um site estático no plano gratuito.
    (Alternativa: **New → Static Site**, *Build Command* vazio e
    `public` em *Publish Directory*.)
-3. Você recebe uma URL como `https://pizzaria-do-jacson.onrender.com`.
+3. Você recebe uma URL como `https://guara-pizzaria.onrender.com`.
 
 ## Configurar o webhook
 
 Abra o site, clique em **Conexão** e cole a URL de produção:
 
 ```
-https://SEU-ESPACO.app.n8n.cloud/webhook/pizzaria-jacson-agente
+https://SEU-ESPACO.app.n8n.cloud/webhook/guara-pizzaria
 ```
 
 Use `/webhook/`, não `/webhook-test/` — a de teste só responde enquanto você
@@ -53,7 +53,7 @@ O nó *Webhook* já vem com **Allowed Origins** em `*`, então funciona de
 imediato. Assim que a URL do Render existir, troque `*` pelo domínio:
 
 ```
-https://pizzaria-do-jacson.onrender.com
+https://guara-pizzaria.onrender.com
 ```
 
 Com `*`, qualquer site pode chamar seu webhook e gastar sua cota do Gemini.
@@ -80,3 +80,19 @@ Recebe:
   `pedido_completo`, a página estampa o selo **Pedido confirmado** e começa uma
   sessão nova.
 - O botão **Novo pedido** também gera uma sessão do zero.
+
+## Aviso de pedido no Discord
+
+Quando um pedido é fechado, o fluxo publica o resumo no canal da cozinha.
+O aviso sai **depois** da resposta ao cliente, então não atrasa a conversa.
+
+1. No Discord: **Editar canal → Integrações → Webhooks → Novo webhook**.
+   Copie a URL.
+2. No n8n, abra o nó *Avisar a cozinha* e crie a credencial **Discord Webhook**
+   com essa URL.
+
+O nó *Pedido fechado?* garante que o aviso só dispare no turno em que o pedido
+foi realmente registrado — não a cada mensagem da conversa.
+
+> O resumo inclui nome, endereço e telefone do cliente. Use um canal restrito à
+> equipe, não um canal aberto do servidor.

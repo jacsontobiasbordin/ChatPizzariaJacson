@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pizzaria-do-jacson
+    name: guara-pizzaria
     runtime: static
     staticPublishPath: ./public
     buildCommand: ""
