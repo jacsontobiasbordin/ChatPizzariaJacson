@@ -86,6 +86,35 @@ Recebe:
   sessão nova.
 - O botão **Novo pedido** também gera uma sessão do zero.
 
+## Cardápio
+
+A aba **Cardapio** tem uma linha por item, agrupada pela coluna `Categoria`:
+tamanhos, sabores (tradicionais, especiais e doces), bordas, **bebidas**,
+formas de pagamento e regras de negócio.
+
+Para bebidas, preencha `Valor` com o preço por unidade. Para tirar um item do
+ar, apague a linha; para incluir, copie uma linha da mesma categoria.
+
+## Acompanhamento de pedido
+
+O cliente consulta o andamento informando o telefone. O agente busca na aba
+**Pedidos** pela coluna `Telefone` e traduz a coluna `Status`:
+
+| Status   | O que o cliente ouve                    | Estimativa |
+|----------|-----------------------------------------|------------|
+| Recebido | Chegou, aguardando a cozinha aceitar    | ~1 hora    |
+| Aceito   | A cozinha aceitou e está preparando     | ~45 min    |
+| Pronto   | Pronta, sai para entrega logo           | ~30 min    |
+| Entrega  | Já saiu para entrega                    | ~25 min    |
+| Entregue | Finalizado                              | —          |
+
+A cozinha atualiza o Status na planilha. A célula tem lista suspensa: escolha
+da lista em vez de digitar, porque um valor fora dela faz o agente responder
+apenas que o pedido está em processamento.
+
+O telefone é gravado **somente com dígitos** (`47999998888`) e é a chave da
+busca. Não formate essa coluna com parênteses ou hífen.
+
 ## Aviso de pedido no Discord
 
 Quando um pedido é fechado, o fluxo publica o resumo no canal da cozinha.
