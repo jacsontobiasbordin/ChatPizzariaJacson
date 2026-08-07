@@ -31,6 +31,7 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
+  overflow:hidden;
   margin:0;
   font-family:var(--corpo);
   color:var(--tinta);
@@ -55,12 +56,13 @@ body{
 .app{
   position:relative;z-index:1;
   max-width:780px;margin:0 auto;
-  min-height:100dvh;display:flex;flex-direction:column;
+  height:100vh;height:100dvh;   /* altura fixa: sem isso o filho nunca rola */
+  display:flex;flex-direction:column;
 }
 
 /* ---------- cabeçalho ---------- */
 .topo{
-  position:sticky;top:0;z-index:5;
+  flex-shrink:0;
   display:flex;align-items:center;gap:12px;
   padding:14px 20px;
   background:rgba(255,255,255,.82);
@@ -134,7 +136,14 @@ body{
 .aviso:empty{display:none}
 
 /* ---------- conversa ---------- */
-.conversa{flex:1;overflow-y:auto;padding:26px 20px 10px;display:flex;flex-direction:column;gap:20px}
+.conversa{
+  flex:1 1 auto;min-height:0;
+  overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:26px 20px 10px;
+  display:flex;flex-direction:column;gap:20px;
+  scroll-behavior:smooth;
+}
 
 .vazio{margin:auto 0;padding:24px 2px}
 .vazio h1{
@@ -219,7 +228,7 @@ body{
 
 /* ---------- escrever ---------- */
 .compositor{
-  position:sticky;bottom:0;
+  flex-shrink:0;
   display:flex;gap:9px;align-items:flex-end;
   padding:13px 20px calc(13px + env(safe-area-inset-bottom));
   background:rgba(255,255,255,.9);
@@ -245,6 +254,7 @@ body{
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .conversa{scroll-behavior:auto}
 }
 </style>
 </head>
@@ -424,7 +434,15 @@ body{
     return wrap;
   }
 
-  function rolar(){ el.conversa.scrollTop = el.conversa.scrollHeight; }
+  // O bloco monoespaçado do cardápio muda de altura depois de inserido.
+  // Dois quadros garantem medir o scrollHeight já com o layout final.
+  function rolar(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        el.conversa.scrollTop = el.conversa.scrollHeight;
+      });
+    });
+  }
 
   function telaInicial(){
     el.conversa.innerHTML =
@@ -450,6 +468,7 @@ body{
     var abrir = typeof forcar === "boolean" ? forcar : el.config.hidden;
     el.config.hidden = !abrir;
     el.btnConfig.setAttribute("aria-expanded", String(abrir));
+    rolar();
     if(abrir){
       el.inputUrl.value = webhookUrl;
       el.inputUrl.focus();
@@ -568,6 +587,7 @@ body{
   el.entrada.addEventListener("input", function(){
     el.entrada.style.height = "auto";
     el.entrada.style.height = Math.min(el.entrada.scrollHeight, 136) + "px";
+    rolar();
   });
 
   el.inputUrl.value = webhookUrl;
